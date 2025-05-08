@@ -36,5 +36,5 @@ jobs:
           uv run mypy .
       - name: Run tests
         # Do not run coverage in CI for now
-        run: uv run pytest . --no-cov
+        run: uv run pytest tests --no-cov
   
