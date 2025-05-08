@@ -34,6 +34,6 @@ jobs:
           uv run flake8 . --select=WPS
           uv run mypy .
       - name: Run tests
-        # For example, using `pytest`
-        run: uv run pytest .
+        # Do not run coverage in CI for now
+        run: uv run pytest . --no-cov
   

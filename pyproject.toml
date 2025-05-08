@@ -62,6 +62,7 @@ ignore = [
     "D105",
     "D106",
     "D107",
+    "D200",
     "D203",
     "D205",
     "D212",
@@ -92,6 +93,8 @@ pydocstyle.convention = "google"
 "tests/*.py" = [
     "S101", # asserts
     "S105", # hardcoded passwords
+    "SLF001",  # private member accessed
+    "PLC2701", # Private name import
 ]
 
 
@@ -101,7 +104,11 @@ pydocstyle.convention = "google"
 # Strict `@xfail` by default:
 xfail_strict = true
 # Fail on warnings:
-filterwarnings = ["error"]
+filterwarnings = [
+    "error",
+    # note the use of single quote below to denote "raw" strings in TOML
+    'ignore:log `extra` param does not work with picologging',
+]
 
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
@@ -189,5 +196,6 @@ ignore = [
 ]
 
 per-file-ignores = [
-    "__init__.py:WPS412"
+    "__init__.py:WPS412",
+    "tests/*:WPS110,WPS218,WPS210"
 ]

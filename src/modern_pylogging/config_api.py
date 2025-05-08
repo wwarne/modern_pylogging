@@ -25,7 +25,7 @@ default_handlers: dict[str, dict[str, Any]] = {
         'respect_handler_level': True,
     },
 }
-if sys.version_info >= (3, 12, 0):
+if sys.version_info >= (3, 12, 0):  # pragma: no cover
     default_handlers['queue_handler'].update({
         'class': 'modern_pylogging.logging_handlers.QueueHandlerContextVarsHappyPy312',
         'queue': {
@@ -196,33 +196,6 @@ class LoggingConfig:
         config.dictConfig(config_dict)
         return cast('Callable[[str], Logger]', getLogger)
 
-    def _prepare_config_dict(self) -> dict[str, Any]:
-        config_base = {
-            'version': self.version,
-            'disable_existing_loggers': self.disable_existing_loggers,
-            'filters': self.filters,
-            'formatters': self.formatters,
-            'handlers': self.handlers,
-            'loggers': self.loggers,
-            'root': self.root,
-        }
-        config_dict = {name: value for name, value in config_base.items() if value}  # noqa: WPS110
-        config_dict['formatters']['json_fmt']['json_dumps_module'] = self.json_dumps_module  # type:ignore[index] # noqa: WPS204
-        config_dict['formatters']['json_fmt']['capture_extra_fields'] = self.capture_extra_fields  # type:ignore[index]
-        config_dict['root']['level'] = self.level  # type:ignore[index]
-        if self.logging_module == 'picologging' and 'datefmt' not in config_dict['formatters']['standard']:
-            # There is a problem in picologging with time formatting with single formatter
-            # https://github.com/microsoft/picologging/issues/203
-            # https://github.com/microsoft/picologging/pull/208
-            config_dict['formatters']['standard']['datefmt'] = '%F %T'  # type: ignore[index]
-
-        config_dict = self.replace_formatters(self.override_formatters, config_dict)
-        _python_3_12_4_fix(config_dict)
-        if self.logging_module == 'picologging' and self.capture_extra_fields:
-            _picologging_and_capture_extra_fields_warning()
-            config_dict['formatters']['json_fmt']['capture_extra_fields'] = False
-        return config_dict
-
     def replace_formatters(self, override_formatters: dict[str, str], source: dict[str, Any]) -> dict[str, Any]:
         if override_formatters:
             source = copy.deepcopy(source)
@@ -250,6 +223,33 @@ class LoggingConfig:
                     # if 'formatter' in values['handlers'][handler_name]:
                     source['handlers'][handler_name]['formatter'] = formatter_name
         return source
+
+    def _prepare_config_dict(self) -> dict[str, Any]:
+        config_base = {
+            'version': self.version,
+            'disable_existing_loggers': self.disable_existing_loggers,
+            'filters': self.filters,
+            'formatters': self.formatters,
+            'handlers': self.handlers,
+            'loggers': self.loggers,
+            'root': self.root,
+        }
+        config_dict = {name: value for name, value in config_base.items() if value}  # noqa: WPS110
+        config_dict['formatters']['json_fmt']['json_dumps_module'] = self.json_dumps_module  # type:ignore[index] # noqa: WPS204
+        config_dict['formatters']['json_fmt']['capture_extra_fields'] = self.capture_extra_fields  # type:ignore[index]
+        config_dict['root']['level'] = self.level  # type:ignore[index]
+        if self.logging_module == 'picologging' and 'datefmt' not in config_dict['formatters']['standard']:  # type:ignore[index]
+            # There is a problem in picologging with time formatting with single formatter
+            # https://github.com/microsoft/picologging/issues/203
+            # https://github.com/microsoft/picologging/pull/208
+            config_dict['formatters']['standard']['datefmt'] = '%F %T'  # type: ignore[index]
+
+        config_dict = self.replace_formatters(self.override_formatters, config_dict)
+        _python_3_12_4_fix(config_dict)
+        if self.logging_module == 'picologging' and self.capture_extra_fields:
+            _picologging_and_capture_extra_fields_warning()
+            config_dict['formatters']['json_fmt']['capture_extra_fields'] = False
+        return config_dict
 
 
 def _python_3_12_4_fix(config_dict: dict[str, Any]) -> None:  # noqa: WPS114

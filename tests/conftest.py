@@ -1,15 +1,17 @@
 import os
 from collections.abc import Generator
+from types import MappingProxyType
 
 import pytest
 
-from tests.helpers import cleanup_logging_impl
+from tests.helpers_for_tests import cleanup_logging_impl
 
-TEMP_ENV_VARS = {
+# Using MappingProxyType so it's frozen
+TEMP_ENV_VARS = MappingProxyType({
     'ENV': 'env-dev-test',
     'APP_NAME': 'system-test',
     'POD_NAME': 'pod-test',
-}
+})
 
 
 @pytest.fixture(scope='session', autouse=True)

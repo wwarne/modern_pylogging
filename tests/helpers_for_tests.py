@@ -3,15 +3,16 @@ import contextlib
 import logging
 import sys
 from collections.abc import Generator
+from typing import Any
 
 import picologging
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
 if sys.version_info >= (3, 12):
-    getHandlerByName = logging.getHandlerByName
+    getHandlerByName = logging.getHandlerByName  # noqa: N816
 else:
 
-    def getHandlerByName(name: str) -> Any:
+    def getHandlerByName(name: str) -> Any:  # noqa: N802
         return logging._handlers.get(name)
 
 
@@ -43,8 +44,8 @@ def cleanup_logging_impl() -> Generator[None, None, None]:
         atexit.unregister(queue_listener_handler.listener.stop)
         queue_listener_handler.listener.stop()
         queue_listener_handler.close()
-        del queue_listener_handler
+        del queue_listener_handler  # noqa: WPS420
 
     name_of_loggers_exist_on_end = set(std_root_logger.manager.loggerDict)
     for name in name_of_loggers_exist_on_end - name_of_loggers_exist_on_start:
-        del std_root_logger.manager.loggerDict[name]
+        std_root_logger.manager.loggerDict.pop(name)
