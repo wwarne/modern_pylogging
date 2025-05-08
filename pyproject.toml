@@ -16,7 +16,6 @@ build-backend = "hatchling.build"
 [dependency-groups]
 dev = [
     "covdefaults>=2.3.0",
-    "fastapi>=0.115.12",
     "flake8-pyproject>=1.2.3",
     "mypy>=1.15.0",
     "orjson>=3.10.18",
@@ -28,8 +27,6 @@ dev = [
     "pytest-randomly>=3.16.0",
     "pytest-xdist>=3.6.1",
     "ruff>=0.11.7",
-    "structlog>=25.3.0",
-    "uvicorn>=0.34.2",
     "wemake-python-styleguide>=1.1.0",
 ]
 
@@ -62,6 +59,7 @@ ignore = [
     "D105",
     "D106",
     "D107",
+    "D200",
     "D203",
     "D205",
     "D212",
@@ -92,6 +90,8 @@ pydocstyle.convention = "google"
 "tests/*.py" = [
     "S101", # asserts
     "S105", # hardcoded passwords
+    "SLF001",  # private member accessed
+    "PLC2701", # Private name import
 ]
 
 
@@ -101,7 +101,11 @@ pydocstyle.convention = "google"
 # Strict `@xfail` by default:
 xfail_strict = true
 # Fail on warnings:
-filterwarnings = ["error"]
+filterwarnings = [
+    "error",
+    # note the use of single quote below to denote "raw" strings in TOML
+    'ignore:log `extra` param does not work with picologging',
+]
 
 asyncio_mode = "auto"
 asyncio_default_fixture_loop_scope = "function"
@@ -189,5 +193,6 @@ ignore = [
 ]
 
 per-file-ignores = [
-    "__init__.py:WPS412"
+    "__init__.py:WPS412",
+    "tests/*:WPS110,WPS218,WPS210"
 ]

@@ -31,7 +31,7 @@ class LoggingQueueListener(QueueListener):
         atexit.register(self.stop)
 
 
-class QueueListenerHandler(QueueListener):
+class QueueListenerHandler(QueueHandler):
     """
     Configure queue listener and handler to support non-blocking logging configuration.
 

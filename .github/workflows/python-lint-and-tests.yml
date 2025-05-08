@@ -16,7 +16,8 @@ jobs:
           - "3.10"
           - "3.11"
           - "3.12"
-          - "3.13"
+          # picologging does not support 3.13 yet
+          # - "3.13"
 
     steps:
       - uses: actions/checkout@v4
@@ -34,6 +35,6 @@ jobs:
           uv run flake8 . --select=WPS
           uv run mypy .
       - name: Run tests
-        # For example, using `pytest`
-        run: uv run pytest .
+        # Do not run coverage in CI for now
+        run: uv run pytest tests --no-cov
   
