@@ -276,7 +276,7 @@ def test_customizing_handler(
     assert isinstance(root_handler, expected_handler_class)
 
     if isinstance(root_handler, logging_handlers.QueueHandlerContextVarsHappyPy312):
-        root_formatter = root_handler.listener.handlers[0].formatter  # type:ignore[union-attr]
+        root_formatter = root_handler.listener.handlers[0].formatter  # type:ignore[union-attr,unused-ignore,attr-defined]
     else:
         root_formatter = root_handler.formatter
     assert isinstance(root_formatter, (JsonFormatterLogging, JsonFormatterPicologging))

@@ -13,7 +13,7 @@ if sys.version_info >= (3, 12):
 else:
 
     def getHandlerByName(name: str) -> Any:  # noqa: N802
-        return logging._handlers.get(name)
+        return logging._handlers.get(name)  # type:ignore[attr-defined]
 
 
 @contextlib.contextmanager
