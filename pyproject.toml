@@ -1,0 +1,193 @@
+[project]
+name = "modern_pylogging"
+version = "0.1.0"
+description = "Helper library for configuring python logging"
+readme = "README.md"
+authors = [
+    { name = "Dmitry P.", email = "wwarne@gmail.com" }
+]
+requires-python = ">=3.10"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "covdefaults>=2.3.0",
+    "fastapi>=0.115.12",
+    "flake8-pyproject>=1.2.3",
+    "mypy>=1.15.0",
+    "orjson>=3.10.18",
+    "picologging>=0.9.3",
+    "pytest>=8.3.5",
+    "pytest-asyncio>=0.26.0",
+    "pytest-cov>=6.1.1",
+    "pytest-mock>=3.14.0",
+    "pytest-randomly>=3.16.0",
+    "pytest-xdist>=3.6.1",
+    "ruff>=0.11.7",
+    "structlog>=25.3.0",
+    "uvicorn>=0.34.2",
+    "wemake-python-styleguide>=1.1.0",
+]
+
+[tool.ruff]
+# Ruff config: https://docs.astral.sh/ruff/settings
+preview = true
+fix = true
+line-length = 120
+extend-exclude = [
+    # Intentionally bad code:
+]
+
+[tool.ruff.format]
+quote-style = "single"
+# This is only required because we have invalid on-purpose code in docstrings:
+docstring-code-format = false
+
+[tool.ruff.lint]
+select = ["ALL"]
+ignore = [
+    "A005", # allow to shadow stdlib and builtin module names
+    "COM812", # trailing comma, conflicts with `ruff format`
+    # Different doc rules that we don't really care about:
+    "CPY001", # missing copyright notice
+    "D100",
+    "D101",
+    "D102",
+    "D103",
+    "D104",
+    "D105",
+    "D106",
+    "D107",
+    "D203",
+    "D205",
+    "D212",
+    "D401",
+    "D404",
+    "D405",
+    "D415",
+    "DOC",
+    "ISC001", # implicit string concat conflicts with `ruff format`
+    "ISC003", # prefer explicit string concat over implicit concat
+    "PLR09", # we have our own complexity rules
+    "PLR2004", # do not report magic numbers
+    "PLR6301", # do not require classmethod / staticmethod when self not used
+    "TRY003", # long exception messages from `tryceratops`
+    "EM101", # Exception must not use a string literal
+    "ANN401", # Allow to use typing.Any (unfortunately it's impossible to type many logging helpers without Any)
+    "PLC0415", # `import` should be at the top-level of a file
+]
+external = ["WPS"]
+
+# Plugin configs:
+flake8-import-conventions.banned-from = ["ast"]
+flake8-quotes.inline-quotes = "single"
+mccabe.max-complexity = 6
+pydocstyle.convention = "google"
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*.py" = [
+    "S101", # asserts
+    "S105", # hardcoded passwords
+]
+
+
+[tool.pytest.ini_options]
+# pytest config: http://doc.pytest.org/en/latest/customize.html
+
+# Strict `@xfail` by default:
+xfail_strict = true
+# Fail on warnings:
+filterwarnings = ["error"]
+
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+
+addopts = [
+    "--strict-config",
+    "--strict-markers",
+    "--doctest-modules",
+    # pytest-cov
+    "--cov=modern_pylogging",
+    "--cov=tests",
+    "--cov-branch",
+    "--cov-report=term-missing:skip-covered",
+    "--cov-report=html",
+    #"--cov-report=xml",
+    #"--cov-fail-under=100",
+    # pytest-xdist
+    # "-n=auto",
+    # Custom ignored dirs with bad code:
+    "--ignore=tests/fixtures",
+    "--ignore=docs",
+]
+[tool.coverage.run]
+# Coverage configuration: https://coverage.readthedocs.io/
+
+# Here we specify plugins for coverage to be used:
+plugins = [
+    "covdefaults",
+]
+
+[tool.coverage.report]
+exclude_also = [
+    "if typing.TYPE_CHECKING:",
+    "if TYPE_CHECKING:",
+]
+
+[tool.mypy]
+# The mypy configurations: http://bit.ly/2zEl9WI
+ignore_missing_imports = true
+strict = true
+local_partial_types = true
+strict_bytes = true
+allow_redefinition = true
+warn_unreachable = true
+
+enable_error_code = [
+    "truthy-bool",
+    "truthy-iterable",
+    "redundant-expr",
+    "unused-awaitable",
+    # "ignore-without-code",
+    "possibly-undefined",
+    "redundant-self",
+    # "explicit-override",
+    # "mutable-override",
+    "unimported-reveal",
+    "deprecated",
+]
+
+disable_error_code = [
+    "no-untyped-def", # TODO: fix
+]
+
+[tool.flake8]
+format = "default"
+show-source = true
+statistics = false
+doctests = true
+
+# Self settings:
+max-imports = 17
+
+# Excluding some directories:
+extend-exclude = [
+    ".venv",
+]
+# We only run `wemake-python-styleguide` with `flake8`:
+select = ["WPS", "E999"]
+
+ignore = [
+    "WPS226",
+    "WPS202",
+    "WPS229",  # ``try`` body length: 2 > 1
+    "WPS221",  #  high Jones Complexity
+]
+
+per-file-ignores = [
+    "__init__.py:WPS412"
+]
