@@ -234,7 +234,7 @@ class LoggingConfig:
             'loggers': self.loggers,
             'root': self.root,
         }
-        config_dict = {name: value for name, value in config_base.items() if value}  # noqa: WPS110
+        config_dict = {name: value for name, value in config_base.items() if value is not None}  # noqa: WPS110
         config_dict['formatters']['json_fmt']['json_dumps_module'] = self.json_dumps_module  # type:ignore[index] # noqa: WPS204
         config_dict['formatters']['json_fmt']['capture_extra_fields'] = self.capture_extra_fields  # type:ignore[index]
         config_dict['root']['level'] = self.level  # type:ignore[index]
