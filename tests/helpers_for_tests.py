@@ -8,6 +8,8 @@ from typing import Any
 import picologging
 from _pytest.logging import LogCaptureHandler, _LiveLoggingNullHandler
 
+from modern_pylogging import logging_manager
+
 if sys.version_info >= (3, 12):
     getHandlerByName = logging.getHandlerByName  # noqa: N816
 else:
@@ -49,3 +51,7 @@ def cleanup_logging_impl() -> Generator[None, None, None]:
     name_of_loggers_exist_on_end = set(std_root_logger.manager.loggerDict)
     for name in name_of_loggers_exist_on_end - name_of_loggers_exist_on_start:
         std_root_logger.manager.loggerDict.pop(name)
+
+    # reset lazy loggers
+    logging_manager._proxy_loggers = {}
+    logging_manager._logger_factory = None

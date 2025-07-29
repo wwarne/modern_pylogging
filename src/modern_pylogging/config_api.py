@@ -7,6 +7,7 @@ from typing import TYPE_CHECKING, Any, Literal, cast
 from modern_pylogging import import_checker
 from modern_pylogging.helper_types import GetLogger
 from modern_pylogging.helper_utils import MissingDependencyError, get_logging_level
+from modern_pylogging.logging_manager import setup_proxy_loggers
 
 if TYPE_CHECKING:
     from collections.abc import Callable
@@ -194,6 +195,9 @@ class LoggingConfig:
         else:
             from logging import config, getLogger  # type:ignore[assignment,no-redef]
         config.dictConfig(config_dict)
+        # configure all proxy loggers
+        setup_proxy_loggers(real_get_logger_fn=getLogger)
+
         return cast('Callable[[str], Logger]', getLogger)
 
     def replace_formatters(self, override_formatters: dict[str, str], source: dict[str, Any]) -> dict[str, Any]:

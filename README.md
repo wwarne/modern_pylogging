@@ -58,6 +58,46 @@ logger.warning("Something might be wrong")
 logger.error("An error occurred", exc_info=True)
 ```
 
+## Lazy get_logger
+
+The LoggerProxy mechanism allows you to call get_logger(__name__) safely at import time, 
+even if logging hasn't been configured yet. 
+
+This is useful for libraries and applications where the logging configuration is deferred 
+until runtime, but logger references are needed earlier.
+
+```python
+# my_module.py
+from modern_pylogging import get_logger
+
+logger = get_logger(__name__)
+
+def do_something():
+    logger.info("This works even before logging is set up!")
+
+```
+```python
+# main.py
+import modern_pylogging
+from my_module import do_something
+
+config = modern_pylogging.LoggingConfig()
+get_logger = config.configure()
+# after calling configure()`logger` in the my_module will be the correct type 
+# for example if we use LoggingConfig(logging_module='logging') it will be python logging.Logger
+# and if we use LoggingConfig(logging_module='picologging') it will be picologging.Logger
+do_something()
+```
+
+If the `logger` instance is called before configuring logging at all - it will use default `logging`
+module to emit a warning message and then your message.
+
+#### Performance note
+
+LoggerProxy adds ~1% overhead vs native loggers, due to dynamic attribute proxying.
+
+
+
 ## Default Configuration (Short Version)
 
 * All logs are sent to `sys.stdout` (useful for Kubernetes or containers).
