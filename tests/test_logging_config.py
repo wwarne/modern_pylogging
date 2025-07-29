@@ -291,7 +291,7 @@ def test_customizing_handler(
         assert isinstance(t_logger.handlers[0], logging_module.StreamHandler)
 
     assert t_logger.handlers[0].name == 'console_stdout'
-    assert t_logger.handlers[0].formatter._fmt == log_format
+    assert t_logger.handlers[0].formatter._fmt == log_format  # type:ignore[union-attr]
 
     t_logger.info("Hello from '%s'", logging_module.__name__)
     log_output = capsys.readouterr().out.strip()
